@@ -2,7 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-
+import urllib.parse
+import json
 #date = input("Please enter a time in the YYYY-MM-DD format:")
 
 request = requests.get(f"https://www.billboard.com/charts/hot-100/2020-01-01/")
@@ -28,22 +29,23 @@ with open("../api/spotify") as auth:
         auth_list.append(inf.strip("\n"))
 
 
-oauth = {
-    "client_id": auth_list[0],
-    "client_secret": auth_list[1],
-    "redirect_url": auth_list[2],
-    "scope": "playlist-modify-private playlist-modify-public"
-}
+try:
+    with open("token.txt") as token:
+        token_list = list(token)
+        token_dictionary = json.loads(token_list[0])
+        secret = token_dictionary["access_token"]
 
-
-sp = spotipy.Spotify(
-    auth_manager=SpotifyOAuth(
-        scope="playlist-modify-private",
-        redirect_uri=auth_list[2],
-        client_id=auth_list[0],
-        client_secret=auth_list[1],
-        show_dialog=True,
-        cache_path="token.txt"
+except FileNotFoundError:
+    sp = spotipy.Spotify(
+        auth_manager=SpotifyOAuth(
+            scope="playlist-modify-private playlist-modify-public",
+            redirect_uri=auth_list[2],
+            client_id=auth_list[0],
+            client_secret=auth_list[1],
+            show_dialog=True,
+            cache_path="token.txt"
+        )
     )
-)
-user_id = sp.current_user()["id"]
+    user_id = sp.current_user()["id"]
+
+
