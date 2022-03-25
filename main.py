@@ -49,3 +49,16 @@ except FileNotFoundError:
     user_id = sp.current_user()["id"]
 
 
+song_to_search = urllib.parse.quote(song_list[0])
+
+song_search_headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {secret}"
+}
+
+song_data = requests.get(url=f'https://api.spotify.com/v1/search?q={song_to_search}&type=track', headers=song_search_headers)
+
+song_json = song_data.json()
+
+song_json
