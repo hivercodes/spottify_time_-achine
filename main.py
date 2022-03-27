@@ -28,7 +28,7 @@ with open("../api/spotify") as auth:
     for inf in base_auth:
         auth_list.append(inf.strip("\n"))
 
-
+#check if secret exists, if not ask for one
 try:
     with open("token.txt") as token:
         token_list = list(token)
@@ -48,7 +48,7 @@ except FileNotFoundError:
     )
     user_id = sp.current_user()["id"]
 
-
+#search peramiters
 song_to_search = urllib.parse.quote(song_list[0])
 
 song_search_headers = {
@@ -57,8 +57,21 @@ song_search_headers = {
     "Authorization": f"Bearer {secret}"
 }
 
-song_data = requests.get(url=f'https://api.spotify.com/v1/search?q={song_to_search}&type=track', headers=song_search_headers)
 
-song_json = song_data.json()
+song_uri_list = []
 
-song_json
+#find uri and add to a list
+
+#for song in song_list:
+#    song_data = requests.get(url=f'https://api.spotify.com/v1/search?q={song_to_search}&type=track', headers=song_search_headers)
+#    song_json = song_data.json()
+#    song_uri = song_json["tracks"]["items"][0]["uri"]
+#    song_uri_list.append(song_uri)
+
+
+
+
+#create playlist
+
+playlist_endpoint = f"https://api.spotify.com/v1/users/{auth_list[3]}/playlists"
+
