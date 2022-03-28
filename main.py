@@ -4,9 +4,9 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import urllib.parse
 import json
-#date = input("Please enter a time in the YYYY-MM-DD format:")
+date = input("Please enter a time in the YYYY-MM-DD format:")
 
-request = requests.get(f"https://www.billboard.com/charts/hot-100/2020-01-01/")
+request = requests.get(f"https://www.billboard.com/charts/hot-100/{date}/")
 
 website = request.text
 
@@ -49,7 +49,7 @@ except FileNotFoundError:
     user_id = sp.current_user()["id"]
 
 #search peramiters
-song_to_search = urllib.parse.quote(song_list[0])
+
 
 song_search_headers = {
     "Accept": "application/json",
@@ -62,11 +62,11 @@ song_uri_list = []
 
 #find uri and add to a list
 
-#for song in song_list:
-#    song_data = requests.get(url=f'https://api.spotify.com/v1/search?q={song_to_search}&type=track', headers=song_search_headers)
-#    song_json = song_data.json()
-#    song_uri = song_json["tracks"]["items"][0]["uri"]
-#    song_uri_list.append(song_uri)
+for song in song_list:
+    song_data = requests.get(url=f'https://api.spotify.com/v1/search?q={song}&type=track', headers=song_search_headers)
+    song_json = song_data.json()
+    song_uri = song_json["tracks"]["items"][0]["uri"]
+    song_uri_list.append(song_uri)
 
 
 
@@ -74,4 +74,32 @@ song_uri_list = []
 #create playlist
 
 playlist_endpoint = f"https://api.spotify.com/v1/users/{auth_list[3]}/playlists"
+
+
+create_playlist_data = {
+  "name": date,
+  "description": "New playlist description",
+}
+
+create_playlist = requests.post(url=playlist_endpoint, headers=song_search_headers, data=json.dumps(create_playlist_data))
+
+created_playlist_uri = json.loads(create_playlist.text)["uri"].split(":")[2]
+
+
+#add songs to playlist
+
+
+
+for uri in song_uri_list:
+    fill_playlist_endpoint = f"https://api.spotify.com/v1/playlists/{created_playlist_uri}/tracks"
+    playlist_filled = requests.post(url=fill_playlist_endpoint, headers=song_search_headers, data=f"[{json.dumps(uri)}]")
+
+
+
+
+
+
+
+
+
 
